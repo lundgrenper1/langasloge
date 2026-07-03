@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Långås Loge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --creme: #EFEFE7;
+    --paper: #FBFBF5;
+    --timmer: #3A4035;
+    --timmer-mjuk: #6E7568;
+    --salvia: #8C9A82;
+    --salvia-djup: #5E6B57;
+    --linje: rgba(58,64,53,.16);
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+
+  body{
+    font-family:'Jost', sans-serif;
+    color:var(--timmer);
+    background:var(--creme);
+    font-weight:300;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  img{ display:block; width:100%; height:100%; object-fit:cover; }
+
+  /* ---------- Topbar ---------- */
+  header{
+    position:absolute;
+    top:0; left:0; right:0;
+    z-index:10;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:32px 48px;
+  }
+  .brand{ display:flex; flex-direction:column; gap:5px; }
+  .wordmark{
+    font-family:'Cormorant Garamond', serif;
+    font-size:23px;
+    font-weight:500;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--paper);
+    line-height:1;
+  }
+  .ort-top{
+    font-size:11px; letter-spacing:.26em; text-transform:uppercase;
+    color:var(--paper); opacity:.78;
+  }
+  nav{ display:flex; gap:38px; align-items:center; }
+  nav a{
+    font-size:13px; letter-spacing:.16em; text-transform:uppercase;
+    text-decoration:none; color:var(--paper); opacity:.85;
+    transition:opacity .25s ease;
+  }
+  nav a:hover{ opacity:1; }
+  nav a.boka{
+    border:1px solid rgba(251,248,242,.55);
+    padding:9px 20px; opacity:1;
+    transition:background .3s ease, color .3s ease;
+  }
+  nav a.boka:hover{ background:var(--paper); color:var(--timmer); }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative; height:100vh; min-height:620px;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    text-align:center; color:var(--paper); overflow:hidden;
+  }
+  .hero-bild{ position:absolute; inset:0; }
+  .hero-bild img{ object-position:center 28%; }
+  .hero-bild::after{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(40,44,36,.45) 0%, rgba(40,44,36,.12) 32%, rgba(40,44,36,.20) 62%, rgba(40,44,36,.55) 100%);
+  }
+  .hero-inner{
+    position:relative; z-index:2;
+    padding:34px 64px;
+  }
+  .hero-inner::before{
+    content:""; position:absolute; inset:-30px -10px; z-index:-1;
+    background:radial-gradient(62% 80% at 50% 50%,
+      rgba(26,30,22,.52) 0%,
+      rgba(26,30,22,.30) 44%,
+      rgba(26,30,22,0) 76%);
+  }
+  .hero h1{
+    font-family:'Cormorant Garamond', serif; font-weight:400;
+    font-size:clamp(52px, 9vw, 116px); line-height:1; letter-spacing:.01em;
+    color:var(--paper);
+    text-shadow:0 1px 22px rgba(18,22,14,.40), 0 1px 4px rgba(18,22,14,.30);
+  }
+
+  /* ---------- Scroll ---------- */
+  .scroll{
+    position:absolute; bottom:38px; left:50%; transform:translateX(-50%);
+    z-index:2; display:flex; flex-direction:column; align-items:center;
+    gap:12px; color:var(--paper); text-decoration:none;
+  }
+  .scroll span{ font-size:11px; letter-spacing:.28em; text-transform:uppercase; opacity:.85; }
+  .scroll-linje{ width:1px; height:46px; background:rgba(251,248,242,.6); position:relative; overflow:hidden; }
+  .scroll-linje::after{
+    content:""; position:absolute; top:-46px; left:0; width:1px; height:46px;
+    background:var(--paper); animation:fall 2.4s cubic-bezier(.7,0,.3,1) infinite;
+  }
+  @keyframes fall{ 0%{transform:translateY(0);} 100%{transform:translateY(92px);} }
+
+  /* ---------- Historien ---------- */
+  .historien{
+    display:grid; grid-template-columns:1fr 1fr;
+    align-items:stretch; background:var(--creme);
+  }
+  .historien-bild{ min-height:560px; }
+  .historien-bild img{ object-position:center 40%; }
+  .historien-text{
+    display:flex; flex-direction:column; justify-content:center;
+    padding:clamp(48px, 7vw, 120px);
+  }
+  .label{
+    font-size:12px; letter-spacing:.3em; text-transform:uppercase;
+    color:var(--salvia-djup); margin-bottom:24px;
+  }
+  .historien-text h2{
+    font-family:'Cormorant Garamond', serif; font-weight:400;
+    font-size:clamp(34px, 4.2vw, 52px); line-height:1.08; margin-bottom:30px;
+  }
+  .historien-text p{
+    font-size:16px; line-height:1.95; color:var(--timmer-mjuk);
+    max-width:46ch; margin-bottom:20px;
+  }
+  .utkast{
+    margin-top:14px; font-size:12px; letter-spacing:.05em; font-style:italic;
+    color:var(--salvia); opacity:.9;
+  }
+
+  /* ---------- Galleri ---------- */
+  .galleri{ padding:clamp(70px, 10vw, 140px) clamp(24px, 6vw, 90px); background:var(--paper); }
+  .galleri-rubrik{ text-align:center; margin-bottom:clamp(46px, 6vw, 80px); }
+  .galleri-rubrik .label{ display:block; }
+  .galleri-rubrik h2{
+    font-family:'Cormorant Garamond', serif; font-weight:400;
+    font-size:clamp(34px, 4.6vw, 56px);
+  }
+  .galleri-grid{
+    display:grid; grid-template-columns:repeat(2, 1fr);
+    gap:clamp(14px, 1.6vw, 24px); max-width:1100px; margin:0 auto;
+  }
+  .galleri-grid figure{ position:relative; aspect-ratio:4/5; overflow:hidden; }
+  .galleri-grid img{ transition:transform 1.1s cubic-bezier(.2,.7,.2,1); }
+  .galleri-grid figure:hover img{ transform:scale(1.04); }
+
+  /* ---------- Hitta hit ---------- */
+  .hitta{
+    display:grid; grid-template-columns:1fr 1fr;
+    align-items:stretch; background:var(--creme);
+  }
+  .hitta-text{
+    display:flex; flex-direction:column; justify-content:center;
+    padding:clamp(48px, 7vw, 120px);
+  }
+  .hitta-text h2{
+    font-family:'Cormorant Garamond', serif; font-weight:400;
+    font-size:clamp(34px, 4.2vw, 52px); line-height:1.08; margin-bottom:28px;
+  }
+  .hitta-text address{
+    font-style:normal; font-size:18px; line-height:1.85;
+    color:var(--timmer); margin-bottom:30px;
+  }
+  .hitta-text .vagbeskrivning{
+    align-self:flex-start; text-decoration:none; color:var(--salvia-djup);
+    font-size:13px; letter-spacing:.18em; text-transform:uppercase;
+    border-bottom:1px solid var(--salvia); padding-bottom:5px;
+    transition:opacity .25s ease;
+  }
+  .hitta-text .vagbeskrivning:hover{ opacity:.65; }
+  .narhet{ margin-bottom:34px; }
+  .narhet p{
+    font-size:16px; line-height:1.85; color:var(--timmer-mjuk);
+    max-width:42ch; margin-bottom:26px;
+  }
+  .rutt{
+    position:relative; display:flex; justify-content:space-between;
+    align-items:flex-start; max-width:400px;
+  }
+  .rutt::before{
+    content:""; position:absolute; top:5px; left:14%; right:14%;
+    height:1px; background:var(--salvia); opacity:.55; z-index:0;
+  }
+  .stopp{
+    position:relative; z-index:1; width:33%;
+    display:flex; flex-direction:column; align-items:center; gap:11px; text-align:center;
+  }
+  .stopp .prick{
+    width:9px; height:9px; border-radius:50%;
+    background:var(--creme); border:1px solid var(--salvia-djup);
+  }
+  .stopp.mitt .prick{
+    width:11px; height:11px; background:var(--salvia-djup); border:none;
+    box-shadow:0 0 0 4px rgba(94,107,87,.16);
+  }
+  .stopp .stad{ font-family:'Cormorant Garamond', serif; font-size:18px; color:var(--timmer); line-height:1.1; }
+  .stopp.mitt .stad{ font-weight:600; }
+  .stopp .tid{ font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--timmer-mjuk); }
+  .hitta-text .utkast{ margin-top:26px; }
+  .hitta-karta{ min-height:480px; }
+  .hitta-karta a{ display:block; position:relative; height:100%; min-height:480px; }
+  .hitta-karta img{ width:100%; height:100%; min-height:480px; object-fit:cover; display:block; }
+  .karta-badge{
+    position:absolute; right:16px; bottom:16px;
+    background:rgba(251,251,245,.92); color:var(--salvia-djup);
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    padding:8px 14px;
+  }
+
+  /* ---------- Boka ---------- */
+  .boka{
+    text-align:center; padding:clamp(80px, 11vw, 150px) 24px;
+    background:var(--salvia-djup); color:var(--paper);
+  }
+  .boka .label{ color:rgba(251,251,245,.7); }
+  .boka h2{
+    font-family:'Cormorant Garamond', serif; font-weight:400;
+    font-size:clamp(36px, 5vw, 62px); margin-bottom:22px;
+  }
+  .boka p{ font-size:16px; opacity:.9; margin-bottom:40px; }
+  .boka-knapp{
+    display:inline-block; text-decoration:none; color:var(--paper);
+    border:1px solid rgba(251,251,245,.6);
+    padding:16px 44px; font-size:13px; letter-spacing:.22em; text-transform:uppercase;
+    transition:background .3s ease, color .3s ease;
+  }
+  .boka-knapp:hover{ background:var(--paper); color:var(--salvia-djup); }
+
+  /* ---------- Footer ---------- */
+  footer{
+    background:var(--timmer); color:var(--paper);
+    text-align:center; padding:54px 24px;
+  }
+  footer .wordmark{ color:var(--paper); display:block; margin-bottom:14px; }
+  footer .ort{ font-size:12px; letter-spacing:.24em; text-transform:uppercase; opacity:.6; margin-bottom:22px; }
+  footer a{ color:var(--paper); font-size:13px; letter-spacing:.1em; text-decoration:none; opacity:.85; border-bottom:1px solid rgba(251,251,245,.4); padding-bottom:2px; }
+  footer a:hover{ opacity:1; }
+
+  /* ---------- Mobil ---------- */
+  @media (max-width:760px){
+    header{ padding:22px 24px; }
+    nav{ gap:18px; }
+    nav a:not(.boka){ display:none; }
+    .wordmark{ font-size:19px; }
+    .historien{ grid-template-columns:1fr; }
+    .historien-bild{ min-height:64vw; }
+    .hitta{ grid-template-columns:1fr; }
+    .hitta-karta{ min-height:70vw; }
+    .hitta-karta iframe{ min-height:70vw; }
+    .galleri-grid{ grid-template-columns:1fr; gap:14px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .scroll-linje::after{ animation:none; top:0; }
+    .galleri-grid img{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <span class="wordmark">Långås Loge</span>
+      <span class="ort-top">Långås &nbsp;·&nbsp; Falkenberg</span>
+    </div>
+    <nav>
+      <a href="#historien">Historien</a>
+      <a href="#galleri">Galleri</a>
+      <a href="#hitta">Hitta hit</a>
+      <a class="boka" href="https://merulo.se">Boka</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-bild"><img src="bilder/hero.jpg" alt="Långås Loge dukad för fest"></div>
+    <div class="hero-inner">
+      <h1>Långås Loge</h1>
+    </div>
+    <a class="scroll" href="#historien" aria-label="Scrolla ner">
+      <span>Scrolla</span>
+      <div class="scroll-linje"></div>
+    </a>
+  </section>
+
+  <section class="historien" id="historien">
+    <div class="historien-bild"><img src="bilder/historia.jpg" alt="Blomsterarrangemang i logen"></div>
+    <div class="historien-text">
+      <span class="label">Historien</span>
+      <h2>En loge med liv kvar i väggarna</h2>
+      <p>Långås Loge är en gammal loge på den halländska landsbygden, strax utanför Falkenberg. Under samma takbjälkar som en gång valvde sig över tröskad säd dukas idag långbord och dansas det till sent.</p>
+      <p>Vi har låtit rummet behålla sin själ. Det rustika virket, det höga taket och det varma ljuset gör varje fest till er egen. Resten fyller ni i, precis så som ni vill ha det.</p>
+      <span class="utkast">Utkast, byt mot er egen berättelse.</span>
+    </div>
+  </section>
+
+  <section class="galleri" id="galleri">
+    <div class="galleri-rubrik">
+      <span class="label">Galleri</span>
+      <h2>Bröllop i logen</h2>
+    </div>
+    <div class="galleri-grid">
+      <figure><img src="bilder/hero.jpg" alt="Salen dukad med runda bord"></figure>
+      <figure><img src="bilder/galleri-dukning.jpg" alt="Dukning i närbild"></figure>
+      <figure><img src="bilder/galleri-langbord.jpg" alt="Långbord med bänkar"></figure>
+      <figure><img src="bilder/historia.jpg" alt="Blommor över gammal vagn"></figure>
+      <figure><img src="bilder/galleri-kvall-tra.jpg" alt="Logen i kvällsljus med björk och ballonger"></figure>
+      <figure><img src="bilder/galleri-runda-bord.jpg" alt="Runda bord med papperslyktor och draperingar"></figure>
+      <figure><img src="bilder/galleri-langbord-ljus.jpg" alt="Långbord i levande ljus"></figure>
+      <figure><img src="bilder/galleri-dukning-ljus.jpg" alt="Dukning med kandelaber och stearinljus"></figure>
+    </div>
+  </section>
+
+  <section class="hitta" id="hitta">
+    <div class="hitta-text">
+      <span class="label">Hitta hit</span>
+      <h2>Vägen till logen</h2>
+      <address>
+        Långås Loge<br>
+        Långås 331<br>
+        311 93 Långås
+      </address>
+      <div class="narhet">
+        <p>Mitt på den halländska västkusten, ungefär lika nära Göteborg som Helsingborg.</p>
+        <div class="rutt">
+          <div class="stopp">
+            <span class="prick"></span>
+            <span class="stad">Göteborg</span>
+            <span class="tid">ca 1 tim</span>
+          </div>
+          <div class="stopp mitt">
+            <span class="prick"></span>
+            <span class="stad">Långås Loge</span>
+            <span class="tid">Logen</span>
+          </div>
+          <div class="stopp">
+            <span class="prick"></span>
+            <span class="stad">Helsingborg</span>
+            <span class="tid">ca 1 tim 20</span>
+          </div>
+        </div>
+      </div>
+      <a class="vagbeskrivning" href="https://www.google.com/maps/dir/?api=1&destination=L%C3%A5ng%C3%A5s%20331%2C%20311%2093%20L%C3%A5ng%C3%A5s" target="_blank" rel="noopener">Vägbeskrivning</a>
+    </div>
+    <div class="hitta-karta">
+      <a href="https://www.google.com/maps/search/?api=1&query=L%C3%A5ng%C3%A5s%20331%2C%20311%2093%20L%C3%A5ng%C3%A5s" target="_blank" rel="noopener" aria-label="Öppna Långås Loge i kartan">
+        <img src="bilder/karta.jpg" alt="Karta över västkusten med Långås mellan Göteborg och Helsingborg">
+        <span class="karta-badge">Öppna i kartan ↗</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="boka">
+    <span class="label">Boka</span>
+    <h2>Fira hos oss</h2>
+    <p>Bokning och förfrågningar sköts via Merulo.</p>
+    <a class="boka-knapp" href="https://merulo.se">Boka via Merulo</a>
+  </section>
+
+  <footer>
+    <span class="wordmark">Långås Loge</span>
+    <div class="ort">Långås · Falkenberg</div>
+    <a href="https://merulo.se">merulo.se</a>
+  </footer>
+
+</body>
+</html>
