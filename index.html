@@ -159,14 +159,14 @@
   }
   .karusell{
     position:relative; display:flex; align-items:center; justify-content:center;
-    gap:clamp(10px, 3vw, 28px); max-width:640px; margin:0 auto;
+    gap:clamp(10px, 3vw, 28px); max-width:1100px; margin:0 auto;
   }
   .karusell-fonster{ overflow:hidden; width:100%; touch-action:pan-y; }
   .karusell-remsa{
     display:flex; list-style:none;
     transition:transform .6s cubic-bezier(.65,0,.35,1);
   }
-  .karusell-bild{ flex:0 0 100%; aspect-ratio:4/5; }
+  .karusell-bild{ flex:0 0 33.3334%; aspect-ratio:4/5; padding:0 8px; box-sizing:border-box; }
   .karusell-bild img{ width:100%; height:100%; object-fit:cover; user-select:none; -webkit-user-drag:none; }
   .karusell-pil{
     flex:0 0 auto; width:44px; height:44px; border-radius:50%;
@@ -283,6 +283,11 @@
   footer a:hover{ opacity:1; }
   .footer-punkt{ color:var(--paper); opacity:.4; font-size:13px; }
 
+  /* ---------- Surfplatta ---------- */
+  @media (max-width:1000px){
+    .karusell-bild{ flex-basis:50%; }
+  }
+
   /* ---------- Mobil ---------- */
   @media (max-width:760px){
     header{ padding:22px 24px; }
@@ -295,6 +300,7 @@
     .hitta-karta{ min-height:70vw; }
     .karusell{ gap:8px; }
     .karusell-pil{ width:36px; height:36px; }
+    .karusell-bild{ flex-basis:100%; padding:0; }
   }
   @media (prefers-reduced-motion: reduce){
     .scroll-linje::after{ animation:none; top:0; }
@@ -430,6 +436,7 @@
   (function(){
     var karusell = document.querySelector('.karusell');
     if(!karusell) return;
+    var fonster = karusell.querySelector('.karusell-fonster');
     var remsa = karusell.querySelector('.karusell-remsa');
     var bilder = Array.prototype.slice.call(karusell.querySelectorAll('.karusell-bild'));
     var punkterWrap = document.querySelector('.karusell-punkter');
@@ -437,41 +444,90 @@
     var foreKnapp = karusell.querySelector('.karusell-pil--fore');
     var nastaKnapp = karusell.querySelector('.karusell-pil--nasta');
     var antal = bilder.length;
-    var index = 0;
+    var perVy = 1;
+    var sida = 0;
+    var punkter = [];
     var timer = null;
     var reduceradRorelse = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    var punkter = bilder.map(function(_, i){
-      var p = document.createElement('button');
-      p.type = 'button';
-      p.className = 'punkt';
-      p.setAttribute('aria-label', 'Bild ' + (i + 1) + ' av ' + antal);
-      p.setAttribute('aria-current', i === 0 ? 'true' : 'false');
-      p.addEventListener('click', function(){ visaBild(i); startaAutospel(); });
-      punkterWrap.appendChild(p);
-      return p;
-    });
-
-    function visaBild(nyIndex){
-      index = (nyIndex + antal) % antal;
-      remsa.style.transform = 'translateX(-' + (index * 100) + '%)';
-      punkter.forEach(function(p, i){
-        p.setAttribute('aria-current', i === index ? 'true' : 'false');
-      });
-      if(status) status.textContent = 'Bild ' + (index + 1) + ' av ' + antal;
+    function raknaPerVy(){
+      var bredd = bilder[0].getBoundingClientRect().width;
+      return bredd > 0 ? Math.max(1, Math.round(fonster.clientWidth / bredd)) : 1;
     }
 
-    function nasta(){ visaBild(index + 1); }
-    function fore(){ visaBild(index - 1); }
+    function antalSidor(){ return Math.ceil(antal / perVy); }
+
+    function startIndexForSida(s){
+      return Math.min(s * perVy, Math.max(antal - perVy, 0));
+    }
+
+    function byggPunkter(){
+      punkterWrap.innerHTML = '';
+      var sidor = antalSidor();
+      punkter = [];
+      for(var s = 0; s < sidor; s++){
+        (function(s){
+          var p = document.createElement('button');
+          p.type = 'button';
+          p.className = 'punkt';
+          var start = startIndexForSida(s) + 1;
+          var slut = Math.min(startIndexForSida(s) + perVy, antal);
+          p.setAttribute('aria-label', perVy > 1 ? ('Bild ' + start + '–' + slut + ' av ' + antal) : ('Bild ' + start + ' av ' + antal));
+          punkterWrap.appendChild(p);
+          p.addEventListener('click', function(){ visaSida(s); startaAutospel(); });
+          punkter.push(p);
+        })(s);
+      }
+    }
+
+    function visaSida(nySida, hoppaUtanAnimation){
+      var sidor = antalSidor();
+      sida = (nySida + sidor) % sidor;
+      var startIdx = startIndexForSida(sida);
+      if(hoppaUtanAnimation){
+        remsa.style.transition = 'none';
+        remsa.offsetHeight;
+      }
+      remsa.style.transform = 'translateX(-' + (startIdx * 100 / perVy) + '%)';
+      if(hoppaUtanAnimation){
+        remsa.offsetHeight;
+        remsa.style.transition = '';
+      }
+      punkter.forEach(function(p, i){
+        p.setAttribute('aria-current', i === sida ? 'true' : 'false');
+      });
+      if(status){
+        var start = startIdx + 1, slut = Math.min(startIdx + perVy, antal);
+        status.textContent = perVy > 1 ? ('Visar bild ' + start + '–' + slut + ' av ' + antal) : ('Bild ' + start + ' av ' + antal);
+      }
+    }
+
+    function nasta(){ visaSida(sida + 1); }
+    function fore(){ visaSida(sida - 1); }
 
     function startaAutospel(){
       stoppaAutospel();
-      if(reduceradRorelse) return;
+      if(reduceradRorelse || antalSidor() <= 1) return;
       timer = setInterval(nasta, 5000);
     }
     function stoppaAutospel(){
       if(timer){ clearInterval(timer); timer = null; }
     }
+
+    function uppdateraLayout(){
+      var nyPerVy = raknaPerVy();
+      if(nyPerVy === perVy && punkter.length) return;
+      perVy = nyPerVy;
+      byggPunkter();
+      visaSida(0, true);
+      startaAutospel();
+    }
+
+    var resizeTimer = null;
+    window.addEventListener('resize', function(){
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(uppdateraLayout, 150);
+    });
 
     nastaKnapp.addEventListener('click', function(){ nasta(); startaAutospel(); });
     foreKnapp.addEventListener('click', function(){ fore(); startaAutospel(); });
@@ -506,7 +562,9 @@
       else if(e.key === 'ArrowRight'){ nasta(); startaAutospel(); }
     });
 
-    visaBild(0);
+    perVy = raknaPerVy();
+    byggPunkter();
+    visaSida(0, true);
     startaAutospel();
   })();
   </script>
