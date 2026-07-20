@@ -39,13 +39,21 @@
 
   /* ---------- Topbar ---------- */
   header{
-    position:absolute;
+    position:fixed;
     top:0; left:0; right:0;
-    z-index:10;
+    z-index:50;
     display:flex;
     align-items:center;
     justify-content:space-between;
     padding:32px 48px;
+    background:transparent;
+    transition:background .35s ease, box-shadow .35s ease;
+  }
+  header.scrollad{
+    background:rgba(58,64,53,.95);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    box-shadow:0 2px 24px rgba(0,0,0,.14);
   }
   .brand{ display:flex; flex-direction:column; gap:5px; }
   .wordmark{
@@ -166,8 +174,16 @@
     display:flex; list-style:none;
     transition:transform .6s cubic-bezier(.65,0,.35,1);
   }
-  .karusell-bild{ flex:0 0 33.3334%; aspect-ratio:4/5; padding:0 8px; box-sizing:border-box; }
-  .karusell-bild img{ width:100%; height:100%; object-fit:cover; user-select:none; -webkit-user-drag:none; }
+  .karusell-bild{ flex:0 0 33.3334%; aspect-ratio:4/5; padding:0 8px; box-sizing:border-box; overflow:hidden; }
+  .karusell-bild-knapp{
+    display:block; width:100%; height:100%; padding:0; border:0; background:none; cursor:zoom-in;
+  }
+  .karusell-bild-knapp:focus-visible{ outline:2px solid var(--salvia-djup); outline-offset:3px; }
+  .karusell-bild img{
+    width:100%; height:100%; object-fit:cover; user-select:none; -webkit-user-drag:none;
+    transition:transform .5s ease;
+  }
+  .karusell-bild-knapp:hover img{ transform:scale(1.035); }
   .karusell-pil{
     flex:0 0 auto; width:44px; height:44px; border-radius:50%;
     border:1px solid var(--linje); background:transparent; color:var(--timmer);
@@ -189,6 +205,39 @@
     position:absolute; width:1px; height:1px; padding:0; margin:-1px;
     overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
   }
+
+  /* ---------- Ljuslåda ---------- */
+  .ljuslada{
+    position:fixed; inset:0; z-index:100;
+    background:rgba(20,22,17,.94);
+    display:flex; align-items:center; justify-content:center;
+    padding:70px;
+  }
+  .ljuslada[hidden]{ display:none; }
+  .ljuslada-innehall{ margin:0; line-height:0; }
+  .ljuslada-innehall img{
+    display:block; width:auto; height:auto;
+    max-width:min(88vw, 1200px); max-height:82vh;
+    object-fit:contain;
+    box-shadow:0 20px 60px rgba(0,0,0,.4);
+  }
+  .ljuslada-stang,
+  .ljuslada-pil{
+    position:absolute;
+    border-radius:50%; border:1px solid rgba(251,251,245,.35); background:transparent; color:var(--paper);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    transition:background .25s ease;
+  }
+  .ljuslada-stang:hover,
+  .ljuslada-pil:hover{ background:rgba(251,251,245,.14); }
+  .ljuslada-stang:focus-visible,
+  .ljuslada-pil:focus-visible{ outline:2px solid var(--paper); outline-offset:2px; }
+  .ljuslada-stang{ top:24px; right:24px; width:44px; height:44px; }
+  .ljuslada-stang svg{ width:18px; height:18px; }
+  .ljuslada-pil{ top:50%; transform:translateY(-50%); width:52px; height:52px; }
+  .ljuslada-pil svg{ width:20px; height:20px; }
+  .ljuslada-pil--fore{ left:24px; }
+  .ljuslada-pil--nasta{ right:24px; }
 
   /* ---------- Hitta hit ---------- */
   .hitta{
@@ -301,10 +350,17 @@
     .karusell{ gap:8px; }
     .karusell-pil{ width:36px; height:36px; }
     .karusell-bild{ flex-basis:100%; padding:0; }
+    .ljuslada{ padding:20px; }
+    .ljuslada-stang{ top:14px; right:14px; width:38px; height:38px; }
+    .ljuslada-pil{ width:38px; height:38px; }
+    .ljuslada-pil--fore{ left:8px; }
+    .ljuslada-pil--nasta{ right:8px; }
   }
   @media (prefers-reduced-motion: reduce){
     .scroll-linje::after{ animation:none; top:0; }
     .karusell-remsa{ transition:none; }
+    .karusell-bild img{ transition:none; }
+    header{ transition:none; }
   }
 </style>
 </head>
@@ -358,14 +414,14 @@
       </button>
       <div class="karusell-fonster">
         <ul class="karusell-remsa">
-          <li class="karusell-bild"><img src="bilder/hero.jpg" alt="Salen dukad med runda bord" loading="lazy"></li>
-          <li class="karusell-bild"><img src="bilder/galleri-dukning.jpg" alt="Dukning i närbild" loading="lazy"></li>
-          <li class="karusell-bild"><img src="bilder/galleri-langbord.jpg" alt="Långbord med bänkar" loading="lazy"></li>
-          <li class="karusell-bild"><img src="bilder/historia.jpg" alt="Blommor över gammal vagn" loading="lazy"></li>
-          <li class="karusell-bild"><img src="bilder/galleri-kvall-tra.jpg" alt="Logen i kvällsljus med björk och ballonger" loading="lazy"></li>
-          <li class="karusell-bild"><img src="bilder/galleri-runda-bord.jpg" alt="Runda bord med papperslyktor och draperingar" loading="lazy"></li>
-          <li class="karusell-bild"><img src="bilder/galleri-langbord-ljus.jpg" alt="Långbord i levande ljus" loading="lazy"></li>
-          <li class="karusell-bild"><img src="bilder/galleri-dukning-ljus.jpg" alt="Dukning med kandelaber och stearinljus" loading="lazy"></li>
+          <li class="karusell-bild"><button type="button" class="karusell-bild-knapp" aria-label="Visa bild 1 av 8 i stort format"><img src="bilder/hero.jpg" alt="Salen dukad med runda bord" loading="lazy"></button></li>
+          <li class="karusell-bild"><button type="button" class="karusell-bild-knapp" aria-label="Visa bild 2 av 8 i stort format"><img src="bilder/galleri-dukning.jpg" alt="Dukning i närbild" loading="lazy"></button></li>
+          <li class="karusell-bild"><button type="button" class="karusell-bild-knapp" aria-label="Visa bild 3 av 8 i stort format"><img src="bilder/galleri-langbord.jpg" alt="Långbord med bänkar" loading="lazy"></button></li>
+          <li class="karusell-bild"><button type="button" class="karusell-bild-knapp" aria-label="Visa bild 4 av 8 i stort format"><img src="bilder/historia.jpg" alt="Blommor över gammal vagn" loading="lazy"></button></li>
+          <li class="karusell-bild"><button type="button" class="karusell-bild-knapp" aria-label="Visa bild 5 av 8 i stort format"><img src="bilder/galleri-kvall-tra.jpg" alt="Logen i kvällsljus med björk och ballonger" loading="lazy"></button></li>
+          <li class="karusell-bild"><button type="button" class="karusell-bild-knapp" aria-label="Visa bild 6 av 8 i stort format"><img src="bilder/galleri-runda-bord.jpg" alt="Runda bord med papperslyktor och draperingar" loading="lazy"></button></li>
+          <li class="karusell-bild"><button type="button" class="karusell-bild-knapp" aria-label="Visa bild 7 av 8 i stort format"><img src="bilder/galleri-langbord-ljus.jpg" alt="Långbord i levande ljus" loading="lazy"></button></li>
+          <li class="karusell-bild"><button type="button" class="karusell-bild-knapp" aria-label="Visa bild 8 av 8 i stort format"><img src="bilder/galleri-dukning-ljus.jpg" alt="Dukning med kandelaber och stearinljus" loading="lazy"></button></li>
         </ul>
       </div>
       <button class="karusell-pil karusell-pil--nasta" type="button" aria-label="Nästa bild">
@@ -431,6 +487,22 @@
       <a href="https://merulo.se">merulo.se</a>
     </div>
   </footer>
+
+  <div class="ljuslada" id="ljuslada" role="dialog" aria-modal="true" aria-label="Förstorad bild" hidden>
+    <button type="button" class="ljuslada-stang" aria-label="Stäng">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+    <button type="button" class="ljuslada-pil ljuslada-pil--fore" aria-label="Föregående bild">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4L7 12l8 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <figure class="ljuslada-innehall">
+      <img src="" alt="">
+    </figure>
+    <button type="button" class="ljuslada-pil ljuslada-pil--nasta" aria-label="Nästa bild">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <p class="sr-only" aria-live="polite" id="ljuslada-status"></p>
+  </div>
 
   <script>
   (function(){
@@ -537,21 +609,28 @@
     karusell.addEventListener('focusin', stoppaAutospel);
     karusell.addEventListener('focusout', startaAutospel);
 
-    var startX = 0, deltaX = 0, drar = false;
+    var startX = 0, deltaX = 0, drar = false, pekareId = null;
     remsa.addEventListener('pointerdown', function(e){
-      drar = true; startX = e.clientX; deltaX = 0;
+      startX = e.clientX; deltaX = 0; drar = false;
+      pekareId = e.pointerId;
       stoppaAutospel();
-      remsa.setPointerCapture(e.pointerId);
     });
     remsa.addEventListener('pointermove', function(e){
-      if(!drar) return;
+      if(pekareId === null || e.pointerId !== pekareId) return;
       deltaX = e.clientX - startX;
+      if(!drar && Math.abs(deltaX) > 6){
+        drar = true;
+        remsa.setPointerCapture(pekareId);
+      }
     });
     function avslutaDrag(){
-      if(!drar) return;
+      if(pekareId === null) return;
+      if(drar){
+        if(deltaX > 40) fore();
+        else if(deltaX < -40) nasta();
+      }
       drar = false;
-      if(deltaX > 40) fore();
-      else if(deltaX < -40) nasta();
+      pekareId = null;
       startaAutospel();
     }
     remsa.addEventListener('pointerup', avslutaDrag);
@@ -566,6 +645,84 @@
     byggPunkter();
     visaSida(0, true);
     startaAutospel();
+  })();
+
+  (function(){
+    var header = document.querySelector('header');
+    if(!header) return;
+    function uppdatera(){
+      if(window.scrollY > 40) header.classList.add('scrollad');
+      else header.classList.remove('scrollad');
+    }
+    window.addEventListener('scroll', uppdatera, { passive:true });
+    uppdatera();
+  })();
+
+  (function(){
+    var ljuslada = document.getElementById('ljuslada');
+    if(!ljuslada) return;
+    var ljusladaImg = ljuslada.querySelector('img');
+    var ljusladaStatus = document.getElementById('ljuslada-status');
+    var stangKnapp = ljuslada.querySelector('.ljuslada-stang');
+    var foreKnapp = ljuslada.querySelector('.ljuslada-pil--fore');
+    var nastaKnapp = ljuslada.querySelector('.ljuslada-pil--nasta');
+    var knappar = Array.prototype.slice.call(document.querySelectorAll('.karusell-bild-knapp'));
+    var bilder = knappar.map(function(knapp){
+      var img = knapp.querySelector('img');
+      return { src: img.currentSrc || img.src, alt: img.alt };
+    });
+    var index = 0;
+    var senastFokuserad = null;
+    var fokuserbara = [foreKnapp, stangKnapp, nastaKnapp];
+
+    function visaAktuell(){
+      var b = bilder[index];
+      ljusladaImg.src = b.src;
+      ljusladaImg.alt = b.alt;
+      if(ljusladaStatus) ljusladaStatus.textContent = 'Bild ' + (index + 1) + ' av ' + bilder.length;
+    }
+    function nasta(){ index = (index + 1) % bilder.length; visaAktuell(); }
+    function fore(){ index = (index - 1 + bilder.length) % bilder.length; visaAktuell(); }
+
+    function tangentbord(e){
+      if(e.key === 'Escape'){ stang(); return; }
+      if(e.key === 'ArrowRight'){ nasta(); return; }
+      if(e.key === 'ArrowLeft'){ fore(); return; }
+      if(e.key === 'Tab'){
+        var idx = fokuserbara.indexOf(document.activeElement);
+        e.preventDefault();
+        var nyIdx = e.shiftKey
+          ? (idx <= 0 ? fokuserbara.length - 1 : idx - 1)
+          : (idx === -1 || idx === fokuserbara.length - 1 ? 0 : idx + 1);
+        fokuserbara[nyIdx].focus();
+      }
+    }
+
+    function oppna(i){
+      index = i;
+      senastFokuserad = document.activeElement;
+      visaAktuell();
+      ljuslada.hidden = false;
+      document.body.style.overflow = 'hidden';
+      stangKnapp.focus();
+      document.addEventListener('keydown', tangentbord);
+    }
+    function stang(){
+      ljuslada.hidden = true;
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', tangentbord);
+      if(senastFokuserad && senastFokuserad.focus) senastFokuserad.focus();
+    }
+
+    knappar.forEach(function(knapp, i){
+      knapp.addEventListener('click', function(){ oppna(i); });
+    });
+    stangKnapp.addEventListener('click', stang);
+    nastaKnapp.addEventListener('click', nasta);
+    foreKnapp.addEventListener('click', fore);
+    ljuslada.addEventListener('click', function(e){
+      if(e.target === ljuslada) stang();
+    });
   })();
   </script>
 
